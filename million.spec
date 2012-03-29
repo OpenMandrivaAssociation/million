@@ -12,6 +12,7 @@ BuildRequires:	qt4-devel
 BuildRequires:	SDL-devel
 BuildRequires:	SDL_mixer-devel
 BuildRequires:	imagemagick
+BuildRequires:	pkgconfig(xrender) >= 0.9.6
 
 %description
 Who Wants To Be A Millionaire? is a game after quiz TV show.
