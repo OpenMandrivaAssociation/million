@@ -1,0 +1,139 @@
+diff -urN million-1.0.0/form1.cpp million-1.0.0-patched/form1.cpp
+--- million-1.0.0/form1.cpp	2011-01-19 21:14:08.000000000 +1000
++++ million-1.0.0-patched/form1.cpp	2012-03-29 21:20:59.139197390 +1100
+@@ -73,8 +73,23 @@
+ 
+ void form1::initSound(){
+ 
++    QString gameDataPath;
+ 
+-    sound_start = Mix_LoadMUS("sounds/start.wav");
++    if (QFile("sounds/start.wav").exists())
++    {
++        gameDataPath = "";
++    }
++    else if (QFile("/usr/share/million/sounds/start.wav").exists())
++    {
++        gameDataPath = "/usr/share/million/";
++    }
++    else
++    {
++        QMessageBox::critical(NULL,"Error","Unable to find game sound files");
++        QApplication::exit();
++    }
++
++    sound_start = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/start.wav");
+     if(!sound_start) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+ 
+diff -urN million-1.0.0/main.cpp million-1.0.0-patched/main.cpp
+--- million-1.0.0/main.cpp	2011-01-17 22:53:45.000000000 +1000
++++ million-1.0.0-patched/main.cpp	2012-03-29 20:33:29.000000000 +1100
+@@ -19,7 +19,6 @@
+     QApplication::setStyle(new QCleanlooksStyle);
+     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+ 
+-
+     // Инизиализация звука
+     SDL_Init(SDL_INIT_AUDIO);
+     if(Mix_OpenAudio(22050, AUDIO_S16, 2, 1024)) {
+@@ -29,18 +28,27 @@
+     // громкость
+     Mix_VolumeMusic(50);
+ 
+-
++    QString gameDataPath;
++    if (QFile("million.db").exists()) {
++        gameDataPath = "";
++    }
++    else if (QFile("/usr/share/million/million.db").exists()) {
++        gameDataPath = "/usr/share/million/";
++    }
++    else {
++        QMessageBox::critical(NULL,"Error","Unable to find game database");
++        return 1;
++    }
+ 
+     // Инициализация БД
+     //create table question (id INTEGER PRIMARY KEY    AUTOINCREMENT, question text,a varchar(32),b varchar(32),c varchar(32),d varchar(32),level int   )
+     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+-    db.setDatabaseName("million.db");
++    db.setDatabaseName(gameDataPath + "million.db");
+     if (!db.open()) {
+         QMessageBox::critical(NULL,"Error","Unable to establish a database connection");
+         return 1;
+     }
+ 
+-
+     form1 form;
+     form.show();
+ 
+diff -urN million-1.0.0/wGame.cpp million-1.0.0-patched/wGame.cpp
+--- million-1.0.0/wGame.cpp	2011-01-19 21:18:34.000000000 +1000
++++ million-1.0.0-patched/wGame.cpp	2012-03-29 20:34:45.000000000 +1100
+@@ -1,6 +1,5 @@
+ #include "wGame.h"
+ 
+-
+ wGame::wGame(QWidget *parent) :    QWidget(parent){
+     this->setFixedSize(971,514);
+ 
+@@ -350,36 +349,44 @@
+ 
+ void wGame::initSound(){
+     QString strNum;
++    QString gameDataPath;
++
++    if (QFile("sounds/start.wav").exists())
++    {
++        gameDataPath = "";
++    }
++    else if (QFile("/usr/share/million/sounds/start.wav").exists())
++    {
++        gameDataPath = "/usr/share/million/";
++    }
++    else
++    {
++        QMessageBox::critical(NULL,"Error","Unable to find game sound files");
++        QApplication::exit();
++    }
+ 
+     // Загрузка звуковых файлов
+     for (int i=1;i<4;i++){
+         strNum.setNum(i,10);
+-        sound_fon[i] = Mix_LoadWAV("sounds/fon"+strNum.toAscii() +".wav");
++        sound_fon[i] = Mix_LoadWAV(gameDataPath.toAscii() + "sounds/fon"+strNum.toAscii() +".wav");
+         if(!sound_fon[i]) QMessageBox::warning(this,"No Sound",Mix_GetError());
+     }
+ 
+-    sound_start = Mix_LoadMUS("sounds/start.wav");
++    sound_start = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/start.wav");
+     if(!sound_start) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+-    sound_pause = Mix_LoadMUS("sounds/pause.wav");
++    sound_pause = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/pause.wav");
+     if(!sound_pause) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+-
+-    sound_true = Mix_LoadMUS("sounds/true.wav");
++    sound_true = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/true.wav");
+     if(!sound_true) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+-    sound_false = Mix_LoadMUS("sounds/false.wav");
++    sound_false = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/false.wav");
+     if(!sound_false) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+-    //sound_50 = Mix_LoadMUS("sounds/50.wav");
+-    //if(!sound_50) QMessageBox::warning(this,"No Sound",Mix_GetError());
+-
+-    sound_help = Mix_LoadMUS("sounds/help.wav");
++    sound_help = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/help.wav");
+     if(!sound_help) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ 
+-    //sound_phone = Mix_LoadMUS("sounds/phone.wav");
+-    //if(!sound_phone) QMessageBox::warning(this,"No Sound",Mix_GetError());
+-
+-    sound_win = Mix_LoadMUS("sounds/win.wav");
++    sound_win = Mix_LoadMUS(gameDataPath.toAscii() + "sounds/win.wav");
+     if(!sound_win) QMessageBox::warning(this,"No Sound",Mix_GetError());
+ }
