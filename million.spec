@@ -1,6 +1,6 @@
 Name:		million
 Version:	1.0.0
-Release:	%mkrel 1
+Release:	2
 Summary:	Who Wants To Be A Millionaire game (Russian version)
 Group:		Games/Puzzles
 License:	Freeware
