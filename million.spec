@@ -1,18 +1,21 @@
 Name:		million
-Version:	1.0.0
-Release:	3
+Version:	1.0.2
+Release:	1
 Summary:	Who Wants To Be A Millionaire game (Russian version)
 Group:		Games/Puzzles
 License:	Freeware
 URL:		http://dansoft.krasnokamensk.ru/more.html?id=1012
-Source0:	%{name}-%{version}.tar.bz2
-Source1:	million-license.txt
-Patch0:		million-1.0.0-datapath.patch
-BuildRequires:	qt4-devel
-BuildRequires:	SDL-devel
-BuildRequires:	SDL_mixer-devel
+Source0:	%{name}-%{version}.tar.gz
+BuildRequires:	qmake5
+BuildRequires:	pkgconfig(Qt5Core)
+BuildRequires:	pkgconfig(Qt5Gui)
+BuildRequires:	pkgconfig(Qt5Sql)
+BuildRequires:	pkgconfig(Qt5Widgets)
+BuildRequires:	pkgconfig(sdl)
+BuildRequires:	pkgconfig(SDL_mixer)
 BuildRequires:	imagemagick
 BuildRequires:	pkgconfig(xrender) >= 0.9.6
+Requires:	qt5-database-plugin-sqlite
 
 %description
 Who Wants To Be A Millionaire? is a game after quiz TV show.
@@ -20,11 +23,9 @@ This is Russian version of the game. No other languages are supported.
 
 %prep
 %setup -q
-%patch0 -p1
-%__cp %{SOURCE1} COPYING
 
 %build
-%qmake_qt4 %{name}.pro
+%qmake_qt5 %{name}.pro
 %make
 
 %install
@@ -35,9 +36,9 @@ This is Russian version of the game. No other languages are supported.
 %__cp Bin/%{name} %{buildroot}%{_bindir}/
 
 # install game data
-%__mkdir_p %{buildroot}%{_datadir}/%{name}
-%__cp Bin/%{name}.db %{buildroot}%{_datadir}/%{name}/
-%__cp -r Bin/sounds %{buildroot}%{_datadir}/%{name}/
+mkdir -p %{buildroot}%{_datadir}/%{name}
+cp Bin/%{name}.db %{buildroot}%{_datadir}/%{name}/
+cp -r Bin/sounds %{buildroot}%{_datadir}/%{name}/
 
 # create and install icons
 for N in 16 32 48 64 128; do convert images/logo.png -scale ${N}x${N}! $N.png; done
@@ -66,7 +67,6 @@ EOF
 %__rm -rf %{buildroot}
 
 %files
-%doc COPYING
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
