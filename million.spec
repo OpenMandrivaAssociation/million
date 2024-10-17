@@ -4,7 +4,7 @@ Release:	1
 Summary:	Who Wants To Be A Millionaire game (Russian version)
 Group:		Games/Puzzles
 License:	Freeware
-URL:		http://dansoft.krasnokamensk.ru/more.html?id=1012
+URL:		https://dansoft.krasnokamensk.ru/more.html?id=1012
 Source0:	%{name}-%{version}.tar.gz
 BuildRequires:	qmake5
 BuildRequires:	pkgconfig(Qt5Core)
